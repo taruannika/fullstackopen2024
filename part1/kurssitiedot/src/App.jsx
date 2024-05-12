@@ -1,23 +1,25 @@
 const App = () => {
   const course = "Half Stack application development";
-  const part1 = {
-    name: "Fundamentals of React",
-    exercises: 10,
-  };
-  const part2 = {
-    name: "Using props to pass data",
-    exercises: 7,
-  };
-  const part3 = {
-    name: "State of a component",
-    exercises: 14,
-  };
+  const parts = [
+    {
+      name: "Fundamentals of React",
+      exercises: 10,
+    },
+    {
+      name: "Using props to pass data",
+      exercises: 7,
+    },
+    {
+      name: "State of a component",
+      exercises: 14,
+    },
+  ];
 
   return (
     <div>
       <Header course={course} />
-      <Content part1={part1} part2={part2} part3={part3} />
-      <Total part1={part1} part2={part2} part3={part3} />
+      <Content parts={parts} />
+      <Total parts={parts} />
     </div>
   );
 };
@@ -26,12 +28,12 @@ const Header = ({ course }) => {
   return <h1>{course}</h1>;
 };
 
-const Content = ({ part1, part2, part3 }) => {
+const Content = ({ parts }) => {
   return (
     <div>
-      <Part part={part1} />
-      <Part part={part2} />
-      <Part part={part3} />
+      {parts.map((part, index) => (
+        <Part key={index} part={part} />
+      ))}
     </div>
   );
 };
@@ -45,8 +47,10 @@ const Part = ({ part }) => {
   );
 };
 
-const Total = ({ part1, part2, part3 }) => {
-  const total = part1.exercises + part2.exercises + part3.exercises;
+const Total = ({ parts }) => {
+  const total = parts.reduce(function (sum, part) {
+    return sum + part.exercises;
+  }, 0);
 
   return <p>Number of exercises {total}</p>;
 };

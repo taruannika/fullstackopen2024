@@ -11,12 +11,14 @@ const App = () => {
     hasError: false,
   });
 
+  // Get all persons
   useEffect(() => {
     Service.getPersons()
       .then((persons) => setPersons(persons))
       .catch((error) => console.log(error));
-  });
+  }, []);
 
+  // handle notification timeout
   useEffect(() => {
     let timer = null;
 
@@ -70,7 +72,13 @@ const App = () => {
             hasError: false,
           });
         })
-        .catch((error) => console.log(error));
+        .catch((error) =>
+          setNotification({
+            ...notification,
+            message: error.message,
+            hasError: true,
+          })
+        );
     } else {
       if (
         window.confirm(
@@ -93,8 +101,13 @@ const App = () => {
               hasError: false,
             });
           })
-          .catch((error) => {
-            console.log(error);
+          .catch(() => {
+            setNotification({
+              ...notification,
+              message: `${updatedPerson.name} has already been removed from server`,
+              hasError: true,
+            });
+            setPersons(persons.filter((p) => p.id !== person.id));
           });
       }
     }
@@ -105,12 +118,21 @@ const App = () => {
     const person = persons.find((person) => person.id === id);
     if (window.confirm(`Delete ${person.name} ? `)) {
       setPersons(persons.filter((person) => person.id !== id));
-      Service.deletePerson(id);
-      setNotification({
-        ...notification,
-        message: `Deleted ${person.name}`,
-        hasError: false,
-      });
+      Service.deletePerson(id)
+        .then(() => {
+          setNotification({
+            ...notification,
+            message: `${person.name} deleted`,
+            hasError: false,
+          });
+        })
+        .catch((error) => {
+          setNotification({
+            ...notification,
+            message: error.message,
+            hasError: true,
+          });
+        });
     }
   };
   return (

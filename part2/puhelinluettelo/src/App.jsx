@@ -48,7 +48,9 @@ const App = () => {
       return;
     }
 
-    setPersons([...persons, newPerson]);
+    axios
+      .post("http://localhost:3001/persons", newPerson)
+      .then((response) => setPersons([...persons, response.data]));
     setFormData({ ...formData, name: "", number: "" });
   };
   return (

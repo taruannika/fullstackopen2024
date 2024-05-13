@@ -37,20 +37,34 @@ const App = () => {
     event.preventDefault();
     const newPerson = { name: formData.name, number: formData.number };
 
-    if (
-      persons
-        .map((person) => person.name.toLowerCase())
-        .includes(newPerson.name.toLowerCase())
-    ) {
-      alert(`${newPerson.name} is already added to phonebook`);
-      setFormData({ ...formData, name: "", number: "" });
-    } else {
-      Service.addPerson(newPerson).then((returnedPerson) =>
-        setPersons([...persons, returnedPerson])
-      );
+    const nameList = persons.map((person) => person.name.toLowerCase());
+    const existingPerson = nameList.includes(newPerson.name.toLowerCase());
 
-      setFormData({ ...formData, name: "", number: "" });
+    if (!existingPerson) {
+      Service.addPerson(newPerson)
+        .then((returnedPerson) => setPersons([...persons, returnedPerson]))
+        .catch((error) => console.log(error));
+    } else {
+      if (
+        window.confirm(
+          `${newPerson.name} is already in phonebook. Change old number to new one`
+        )
+      ) {
+        const person = persons.find(
+          (person) => person.name.toLowerCase() === newPerson.name.toLowerCase()
+        );
+
+        const updatedPerson = { ...person, number: newPerson.number };
+        Service.updatePerson(person.id, updatedPerson)
+          .then((returnedPerson) =>
+            setPersons(
+              persons.map((n) => (n.id === person.id ? returnedPerson : n))
+            )
+          )
+          .catch((error) => console.log(error));
+      }
     }
+    setFormData({ ...formData, name: "", number: "" });
   };
 
   const handleDelete = (id) => {

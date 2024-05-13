@@ -2,15 +2,14 @@ import { useEffect, useState } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import axios from "axios";
+import Service from "./Service";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((response) => setPersons(response.data))
+    Service.getPersons()
+      .then((persons) => setPersons(persons))
       .catch((error) => console.log(error));
   });
 
@@ -44,14 +43,14 @@ const App = () => {
         .includes(newPerson.name.toLowerCase())
     ) {
       alert(`${newPerson.name} is already added to phonebook`);
-      setFormData({ name: "", number: "" });
-      return;
-    }
+      setFormData({ ...formData, name: "", number: "" });
+    } else {
+      Service.addPerson(newPerson).then((returnedPerson) =>
+        setPersons([...persons, returnedPerson])
+      );
 
-    axios
-      .post("http://localhost:3001/persons", newPerson)
-      .then((response) => setPersons([...persons, response.data]));
-    setFormData({ ...formData, name: "", number: "" });
+      setFormData({ ...formData, name: "", number: "" });
+    }
   };
   return (
     <div>

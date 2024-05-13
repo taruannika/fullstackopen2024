@@ -7,19 +7,20 @@ const App = () => {
   const [countries, setCountries] = useState(null);
   const [filter, setFilter] = useState("");
 
-  const countriesToShow = countries?.filter((c) =>
-    filter ? c.name.common.toLowerCase().includes(filter.toLowerCase()) : null
-  );
+  const countriesToShow = filter
+    ? countries.filter((c) =>
+        c.name.common.toLowerCase().includes(filter.toLowerCase())
+      )
+    : null;
 
   const display = () => {
     switch (true) {
-      case countriesToShow.length <= 10 && countries.length > 1:
-        return <Countries countries={countriesToShow} />;
-      case countriesToShow.length > 10:
-        return <p>Too Many matches, specify another filter</p>;
-      case countriesToShow.length === 1:
-        console.log("One country");
+      case countriesToShow?.length === 1:
         return <Country country={countriesToShow[0]} />;
+      case countriesToShow?.length <= 10 && countries.length > 1:
+        return <Countries countries={countriesToShow} />;
+      case countriesToShow?.length > 10:
+        return <p>Too Many matches, specify another filter</p>;
       default:
         return null;
     }

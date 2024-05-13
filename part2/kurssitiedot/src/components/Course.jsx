@@ -1,6 +1,6 @@
 const Header = ({ course }) => {
   const { name } = course;
-  return <h1>{name}</h1>;
+  return <h2>{name}</h2>;
 };
 
 const Content = ({ parts }) => {

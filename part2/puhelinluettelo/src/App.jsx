@@ -52,6 +52,14 @@ const App = () => {
       setFormData({ ...formData, name: "", number: "" });
     }
   };
+
+  const handleDelete = (id) => {
+    const person = persons.find((person) => person.id === id);
+    if (window.confirm(`Delete ${person.name} ? `)) {
+      setPersons(persons.filter((person) => person.id !== id));
+      Service.deletePerson(id);
+    }
+  };
   return (
     <div>
       <h2>Phonebook</h2>
@@ -67,7 +75,7 @@ const App = () => {
         formData={formData}
       />
       <h2>Numbers</h2>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} handleDelete={handleDelete} />
     </div>
   );
 };

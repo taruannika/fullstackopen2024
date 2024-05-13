@@ -8,17 +8,24 @@ const App = () => {
     { name: "Mary Poppendieck", number: "39-23-6423122" },
   ]);
 
-  const [formData, setFormData] = useState({ name: "", number: "" });
-  const [filter, setFilter] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    number: "",
+    filter: "",
+  });
 
-  const personsToShow = filter
+  const personsToShow = formData.filter
     ? persons.filter((person) =>
-        person.name.toLowerCase().includes(filter.toLowerCase())
+        person.name.toLowerCase().includes(formData.filter.toLowerCase())
       )
     : persons;
 
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
+
+  const clearFilter = () => {
+    setFormData({ ...formData, filter: "" });
   };
 
   const handleSubmit = (event) => {
@@ -36,7 +43,7 @@ const App = () => {
     }
 
     setPersons([...persons, newPerson]);
-    setFormData({ name: "", number: "" });
+    setFormData({ ...formData, name: "", number: "" });
   };
   return (
     <div>
@@ -44,10 +51,12 @@ const App = () => {
       <div>
         filter shown with
         <input
+          name="filter"
           type="text"
-          value={filter}
-          onChange={(event) => setFilter(event.target.value)}
+          value={formData.filter}
+          onChange={handleChange}
         />
+        <button onClick={clearFilter}>Clear</button>
       </div>
       <form onSubmit={handleSubmit}>
         <h2>Add new</h2>

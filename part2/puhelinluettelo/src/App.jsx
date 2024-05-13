@@ -3,15 +3,35 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import Service from "./Service";
-
+import Notification from "./components/Notification";
 const App = () => {
   const [persons, setPersons] = useState([]);
+  const [notification, setNotification] = useState({
+    message: null,
+    hasError: false,
+  });
 
   useEffect(() => {
     Service.getPersons()
       .then((persons) => setPersons(persons))
       .catch((error) => console.log(error));
   });
+
+  useEffect(() => {
+    let timer = null;
+
+    if (notification.message) {
+      timer = setTimeout(() => {
+        setNotification({ ...notification, message: null, hasError: false });
+      }, 5000);
+    }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [notification]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -42,7 +62,14 @@ const App = () => {
 
     if (!existingPerson) {
       Service.addPerson(newPerson)
-        .then((returnedPerson) => setPersons([...persons, returnedPerson]))
+        .then((returnedPerson) => {
+          setPersons([...persons, returnedPerson]);
+          setNotification({
+            ...notification,
+            message: `Added ${newPerson.name}`,
+            hasError: false,
+          });
+        })
         .catch((error) => console.log(error));
     } else {
       if (
@@ -56,12 +83,19 @@ const App = () => {
 
         const updatedPerson = { ...person, number: newPerson.number };
         Service.updatePerson(person.id, updatedPerson)
-          .then((returnedPerson) =>
+          .then((returnedPerson) => {
             setPersons(
               persons.map((n) => (n.id === person.id ? returnedPerson : n))
-            )
-          )
-          .catch((error) => console.log(error));
+            );
+            setNotification({
+              ...notification,
+              message: `Updated ${updatedPerson.name}`,
+              hasError: false,
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       }
     }
     setFormData({ ...formData, name: "", number: "" });
@@ -72,11 +106,17 @@ const App = () => {
     if (window.confirm(`Delete ${person.name} ? `)) {
       setPersons(persons.filter((person) => person.id !== id));
       Service.deletePerson(id);
+      setNotification({
+        ...notification,
+        message: `Deleted ${person.name}`,
+        hasError: false,
+      });
     }
   };
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification notification={notification} />
       <Filter
         clearFilter={clearFilter}
         formData={formData}

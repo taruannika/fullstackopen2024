@@ -7,6 +7,15 @@ const App = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const newPerson = { name: newName };
+    if (
+      persons
+        .map((person) => person.name.toLowerCase())
+        .includes(newPerson.name.toLowerCase())
+    ) {
+      alert(`${newPerson.name} is already added to phonebook`);
+      setNewName("");
+      return;
+    }
     setPersons([...persons, newPerson]);
     setNewName("");
   };
@@ -15,7 +24,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          name:{" "}
+          name:
           <input
             value={newName}
             onChange={(event) => setNewName(event.target.value)}

@@ -24,12 +24,20 @@ const Part = ({ part }) => {
   );
 };
 
+const Total = ({ parts }) => {
+  const total = parts.reduce(function (sum, part) {
+    return sum + part.exercises;
+  }, 0);
+  return <h3>Total of exercises {total}</h3>;
+};
+
 const Course = ({ course }) => {
   const { parts } = course;
   return (
     <div>
       <Header course={course} />
       <Content parts={parts} />
+      <Total parts={parts} />
     </div>
   );
 };
